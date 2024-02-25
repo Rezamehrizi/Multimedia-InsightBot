@@ -107,9 +107,10 @@ def get_response(user_input):
     return response['answer']
 
 
-
+# Clear chat history function
 def clear_chat_history():
     st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+
 st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # session state
