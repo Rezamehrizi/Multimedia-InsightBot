@@ -3,6 +3,10 @@ import os
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders.csv_loader import CSVLoader
+# from PyPDF2 import PdfReader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain_community.vectorstores import Chroma
@@ -40,7 +44,8 @@ with st.sidebar:
         max_length = st.slider('max_length', min_value=32, max_value=128, value=120, step=8)
     
     st.write("""
-    2. Simply enter your file or URL of any website you wish to converse with.
+    2. Enter your file or URL.
+    3. Start chatting with your file or website.
     """)
 
 st.subheader("ConverseAI: Instant Conversations with Any Website", anchor=False)
@@ -55,9 +60,35 @@ ConverseAI is an innovative chatbox powered by LLMs.
 import streamlit as st
 
 # Define available file types
-file_types = ["URL", "PDF", "TXT", "CSV"]
+
+def get_text_from_url(url):
+    # get the text in document form
+    loader = WebBaseLoader(url)
+    text = loader.load()
+    return text
+
+def get_text_from_pdf(uploaded_file):                    
+    # pdf_reader = PdfReader(uploaded_file)
+    # # store the pdf text in a text
+    # text = ""
+    # for page in pdf_reader.pages:
+    #     text += page.extract_text() + "\n"
+    loader = PyPDFLoader(uploaded_file)
+    text = loader.load_and_split()
+    return text
+
+def get_text_from_csv(uploaded_file):
+    loader = CSVLoader(uploaded_file)  
+    text = loader.load()
+    return text
+
+def get_text_from_txt(uploaded_file):
+    loader = TextLoader(uploaded_file)  
+    text = loader.load()
+    return text
 
 # Create a multi-choice box
+file_types = ["URL", "PDF", "TXT", "CSV"]
 selected_file_type = st.selectbox("Select file type:", file_types, key="file_type")
 
 # Display elements based on selection
@@ -67,13 +98,23 @@ if selected_file_type:
         url = st.text_input("Paste URL:")
         if url:
             st.write(f"You entered URL: {url}")
-            # Process the URL further based on your requirements (e.g., download file, fetch content)
+            document = get_text_from_url(url)
+            
     else:
         # Handle file upload for non-URL types
         uploaded_file = st.file_uploader(f"Upload {selected_file_type} file:")
         if uploaded_file:
             st.write(f"You uploaded {uploaded_file.name}")
             # Process the uploaded file based on its type (e.g., read content, perform analysis)
+            if "PDF" in selected_file_type:
+                document = get_text_from_pdf(uploaded_file)                
+                
+            elif "TXT" in selected_file_type:
+                document = get_text_from_txt(uploaded_file)
+                
+            else:
+                document = get_text_from_csv(uploaded_file)
+
 else:
     st.write("Please select at least one file type.")
 
