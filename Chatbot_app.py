@@ -21,7 +21,13 @@ st.set_page_config(page_title=" Chatbot (with OpenAI)")
 # Replicate Credentials (sidebar)
 with st.sidebar:
 
-    st.subheader("Enter your [OpenAI API Key](https://platform.openai.com/account/api-keys)")
+    st.write("""
+    **ConverseAI** is an innovative chatbox powered by LLMs. 
+             
+    **How does it work?** 🤔
+             
+    1. Enter your [OpenAI API Key](https://platform.openai.com/account/api-keys).
+    """)
     if 'OPENAI_API_KEY' in st.secrets:
         st.success('API key already provided!', icon='✅')
     else:
@@ -32,22 +38,44 @@ with st.sidebar:
     with st.expander("Parameters"):
         temperature = st.slider('temperature', min_value=0.01, max_value=5.0, value=0.1, step=0.01)
         max_length = st.slider('max_length', min_value=32, max_value=128, value=120, step=8)
-        
+    
+    st.write("""
+    2. Simply enter your file or URL of any website you wish to converse with.
+    """)
 
 st.subheader("ConverseAI: Instant Conversations with Any Website", anchor=False)
 st.write("""
 ConverseAI is an innovative chatbox powered by LLMs. 
-**How does it work?** 🤔
-1. Enter your [OpenAI API Key](https://platform.openai.com/account/api-keys).
-2. Simply enter the URL of any website you wish to converse with.
 """)
 
 # with st.expander("💡 Video Tutorial"):
 #     with st.spinner("Loading video.."):
 #         st.video("https://youtu.be/yzBr3L2BIto", format="video/mp4", start_time=0)
 
+import streamlit as st
 
-WEB_URL = st.text_input("Enter the website link:", value="https://en.wikipedia.org/wiki/Bayesian_network")
+# Define available file types
+file_types = ["URL", "PDF", "TXT", "CSV"]
+
+# Create a multi-choice box
+selected_file_type = st.selectbox("Select file type:", file_types, key="file_type")
+
+# Display elements based on selection
+if selected_file_type:
+    if "URL" in selected_file_type:
+        # Handle URL input
+        url = st.text_input("Paste URL:")
+        if url:
+            st.write(f"You entered URL: {url}")
+            # Process the URL further based on your requirements (e.g., download file, fetch content)
+    else:
+        # Handle file upload for non-URL types
+        uploaded_file = st.file_uploader(f"Upload {selected_file_type} file:")
+        if uploaded_file:
+            st.write(f"You uploaded {uploaded_file.name}")
+            # Process the uploaded file based on its type (e.g., read content, perform analysis)
+else:
+    st.write("Please select at least one file type.")
 
 
 
@@ -119,7 +147,7 @@ if "chat_history" not in st.session_state:
         AIMessage(content="Hello, I am a bot. How may I assist you today?"),
     ]
 if "vector_store" not in st.session_state:
-    st.session_state.vector_store = get_vectorstore_from_url(WEB_URL)    
+    st.session_state.vector_store = get_vectorstore_from_url(url)    
 
 # user input
 user_query = st.chat_input("Type your message here...")
