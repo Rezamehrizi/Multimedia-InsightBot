@@ -29,6 +29,7 @@ with st.sidebar:
     st.write("""
     **ConverseAI** is an innovative chatbox powered by LLMs. 
              
+             
     **How does it work?** 🤔
              
     1. Enter your [OpenAI API Key](https://platform.openai.com/account/api-keys).
