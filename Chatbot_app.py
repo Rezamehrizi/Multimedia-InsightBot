@@ -21,6 +21,7 @@ load_dotenv()
 
 
 
+
 # App title 
 st.set_page_config(page_title=" Chatbot (with OpenAI)")
 
@@ -93,6 +94,8 @@ def get_text_from_txt(uploaded_file):
 # Create a multi-choice box
 file_types = ["URL", "PDF", "TXT", "CSV"]
 selected_file_type = st.selectbox("Select file type:", file_types, key="file_type")
+
+
 
 # Display elements based on selection
 if selected_file_type:
