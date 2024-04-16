@@ -1,4 +1,4 @@
 # Chatbot
 
-This chatbot is created using chatgpt model from Meta.
+This chatbot is created using chatgpt model from OpenAI.
 
